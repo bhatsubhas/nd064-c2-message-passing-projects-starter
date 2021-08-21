@@ -1,3 +1,4 @@
+CREATE EXTENSION postgis;
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR NOT NULL,
