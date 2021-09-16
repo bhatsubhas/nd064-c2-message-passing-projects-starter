@@ -1,0 +1,9 @@
+export DB_HOST=localhost
+export DB_PORT=25432
+export DB_NAME=gis
+export DB_USERNAME=docker
+export DB_PASSWORD=docker
+export BOOTSTRAP_SERVER=localhost:29092
+export TOPIC_NAME=locations
+export LOCATION_GRPC_SERVER=[::]:5005
+export PERSON_GRPC_SERVER=[::]:5006
