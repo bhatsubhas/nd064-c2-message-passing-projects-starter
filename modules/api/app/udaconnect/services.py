@@ -24,60 +24,30 @@ class ConnectionService:
         large datasets. This is by design: what are some ways or techniques to help make this data integrate more
         smoothly for a better user experience for API consumers?
         """
-        # Instead of DB Call use gRPC call to the location list response
-        location_list_request = location_pb2.LocationListRequest(
+        # Instead of DB Call use gRPC call to get the exposed locations
+        location_list_request = location_pb2.ListExposedLocationsRequest(
             person_id=person_id,
             start_date=start_date.isoformat(),
             end_date=end_date.isoformat()
         )
-        location_list_response = g.grpc_stub.RetrieveLocationList(location_list_request)
+        location_list_response = g.location_stub.ListExposedLocations(location_list_request)
+        exposed_locations = location_list_response.locations
 
         # Cache all users in memory for quick lookup
         person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
-
-        # Prepare arguments for queries
-        data = []
-        for location in location_list_response.locations:
-            data.append(
-                {
-                    "person_id": person_id,
-                    "longitude": location.longitude,
-                    "latitude": location.latitude,
-                    "meters": meters,
-                    "start_date": start_date.strftime("%Y-%m-%d"),
-                    "end_date": (end_date + timedelta(days=1)).strftime("%Y-%m-%d"),
-                }
-            )
-
-        query = text(
-            """
-        SELECT  person_id, id, ST_X(coordinate), ST_Y(coordinate), creation_time
-        FROM    location
-        WHERE   ST_DWithin(coordinate::geography,ST_SetSRID(ST_MakePoint(:latitude,:longitude),4326)::geography, :meters)
-        AND     person_id != :person_id
-        AND     TO_DATE(:start_date, 'YYYY-MM-DD') <= creation_time
-        AND     TO_DATE(:end_date, 'YYYY-MM-DD') > creation_time;
-        """
-        )
         result: List[Connection] = []
-        for line in tuple(data):
-            for (
-                exposed_person_id,
-                location_id,
-                exposed_lat,
-                exposed_long,
-                exposed_time,
-            ) in db.engine.execute(query, **line):
+        for exposed_loc in exposed_locations:
                 location = Location(
-                    id=location_id,
-                    person_id=exposed_person_id,
-                    creation_time=exposed_time,
+                    id=exposed_loc.location_id,
+                    person_id=exposed_loc.exposed_person_id,
+                    creation_time=datetime.fromisoformat(exposed_loc.exposed_time)
                 )
-                location.set_wkt_with_coords(exposed_lat, exposed_long)
+                location.set_wkt_with_coords(exposed_loc.exposed_lat, exposed_loc.exposed_long)
 
                 result.append(
                     Connection(
-                        person=person_map[exposed_person_id], location=location,
+                        person=person_map[exposed_loc.exposed_person_id], 
+                        location=location
                     )
                 )
 

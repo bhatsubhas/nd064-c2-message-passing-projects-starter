@@ -20,13 +20,23 @@ DB_PORT = os.environ["DB_PORT"]
 DB_NAME = os.environ["DB_NAME"]
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("location-injection-service")
+logger = logging.getLogger("location-ingestion-service")
 
-def init_db():
-    db_engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
-    Session = sessionmaker(bind=db_engine)
-    session = Session()
-    return session
+class LocationIngestionService:
+    def __init__(self) -> None:
+        db_engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+        Session = sessionmaker(bind=db_engine)
+        self.session = Session()
+    
+    def save_location(self, location_data):
+        new_location = Location()
+        new_location.person_id = location_data["person_id"]
+        new_location.creation_time = location_data["creation_time"]
+        new_location.coordinate = ST_Point(location_data["latitude"], location_data["longitude"])
+        self.session.add(new_location)
+        self.session.commit()
+        logger.info(f"Location detail created for person with id {new_location.person_id}")
+
 
 def init_kafka_topic():
     admin_client = KafkaAdminClient(
@@ -51,20 +61,14 @@ def main():
     Recieve the message in below format:
     {"person_id": 420,"creation_time": "2021-09-05T17:42:59.787Z","latitude": 36.0,"longitude": 126.0}
     '''
-    session = init_db()
     logger.info(f"Starting Location Injection Service")
+    service = LocationIngestionService()
     location_consumer = get_kafka_consumer()
     for loc_data in location_consumer:
         logger.debug(f"Received a message for processing: {loc_data}")
-        loc = json.loads(loc_data.value)
-        logger.debug(f"Location message received: {loc}")
-        new_location = Location()
-        new_location.person_id = loc["person_id"]
-        new_location.creation_time = loc["creation_time"]
-        new_location.coordinate = ST_Point(loc["latitude"], loc["longitude"])
-        session.add(new_location)
-        session.commit()
-        logger.info(f"Location detail created for person with id {new_location.person_id}")
-
+        location_data = json.loads(loc_data.value)
+        logger.debug(f"Location message received: {location_data}")
+        service.save_location(location_data)
+        
 if __name__ == '__main__':
     main()

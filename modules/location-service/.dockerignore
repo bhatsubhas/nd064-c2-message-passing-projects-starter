@@ -1,3 +1,5 @@
 __pycache__/
+protos/
+generate-source-files.sh
 Dockerfile
 test_client.py
