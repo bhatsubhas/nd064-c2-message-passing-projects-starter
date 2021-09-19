@@ -10,8 +10,8 @@ from sqlalchemy.orm import sessionmaker
 
 from models import Location
 
-BOOTSTRAP_SERVER = os.environ["BOOTSTRAP_SERVER"]
-TOPIC_NAME = os.environ["TOPIC_NAME"]
+BOOTSTRAP_SERVER = os.environ.get("BOOTSTRAP_SERVER", "localhost:9092")
+TOPIC_NAME = os.environ.get("TOPIC_NAME", "locations")
 
 DB_USERNAME = os.environ["DB_USERNAME"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]

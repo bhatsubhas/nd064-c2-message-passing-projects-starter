@@ -39,8 +39,8 @@ class LocationRetrieveResource(Resource):
     @api.doc("Get location when unique ID is passed")
     @api.marshal_with(location_response)
     def get(self, location_id) -> Location:
-        location_request = location_pb2.LocationRequest(location_id=location_id)
-        location_response = g.grpc_stub.RetrieveLocation(location_request)
+        location_request = location_pb2.GetLocationRequest(location_id=location_id)
+        location_response = g.location_stub.GetLocation(location_request)
         return {
             "person_id": location_response.person_id,
             "id": location_response.location_id,
@@ -56,10 +56,14 @@ class LocationCreateResource(Resource):
     @api.marshal_with(success_response, code=202)
     @accepts(schema=LocationSchema)
     def post(self) -> Location:
-        # Send the creation request to the Kafka topic
-        kafka_producer = g.kafka_producer
-        location_data = json.dumps(request.get_json()).encode()
-        kafka_producer.send(TOPIC_NAME, location_data)
+        location_data = request.get_json()
+        create_location_request = location_pb2.CreateLocationRequest(
+            person_id=location_data["person_id"],
+            creation_time=location_data["creation_time"],
+            longitude=location_data["longitude"],
+            latitude=location_data["latitude"]
+        )
+        create_location_response = g.location_stub.CreateLocation(create_location_request)
         return {
-            "message" : "Location creation request accepted"
+            "message" : create_location_response.message
         }, 202

@@ -22,9 +22,9 @@ DB_PASSWORD = os.environ["DB_PASSWORD"]
 DB_HOST = os.environ["DB_HOST"]
 DB_PORT = os.environ["DB_PORT"]
 DB_NAME = os.environ["DB_NAME"]
-KAFKA_TOPIC_NAME = os.environ["TOPIC_NAME"]
-KAFKA_SERVER = os.environ["BOOTSTRAP_SERVER"]
-GRPC_SERVER = os.environ["LOCATION_GRPC_SERVER"]
+KAFKA_TOPIC_NAME = os.environ.get("TOPIC_NAME", "locations")
+KAFKA_SERVER = os.environ.get("BOOTSTRAP_SERVER", "localhost:9092")
+LOCATION_GRPC_SERVER = os.environ.get("LOCATION_GRPC_SERVER", "localhost:5001")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("location-service")
@@ -135,8 +135,8 @@ def main():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
     location_pb2_grpc.add_LocationServiceServicer_to_server(LocationServicer(), server)
 
-    logger.info(f"Location Service is starting on {GRPC_SERVER}...")
-    server.add_insecure_port(GRPC_SERVER)
+    logger.info(f"Location Service is starting on {LOCATION_GRPC_SERVER}...")
+    server.add_insecure_port(LOCATION_GRPC_SERVER)
     server.start()
 
     try:

@@ -5,7 +5,7 @@ import grpc
 import location_pb2 as location__pb2
 
 
-class LocationRetrieveServiceStub(object):
+class LocationServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -14,58 +14,74 @@ class LocationRetrieveServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.RetrieveLocation = channel.unary_unary(
-                '/LocationRetrieveService/RetrieveLocation',
-                request_serializer=location__pb2.LocationRequest.SerializeToString,
-                response_deserializer=location__pb2.LocationResponse.FromString,
+        self.CreateLocation = channel.unary_unary(
+                '/LocationService/CreateLocation',
+                request_serializer=location__pb2.CreateLocationRequest.SerializeToString,
+                response_deserializer=location__pb2.CreateLocationResponse.FromString,
                 )
-        self.RetrieveLocationList = channel.unary_unary(
-                '/LocationRetrieveService/RetrieveLocationList',
-                request_serializer=location__pb2.LocationListRequest.SerializeToString,
-                response_deserializer=location__pb2.LocationResponseList.FromString,
+        self.GetLocation = channel.unary_unary(
+                '/LocationService/GetLocation',
+                request_serializer=location__pb2.GetLocationRequest.SerializeToString,
+                response_deserializer=location__pb2.Location.FromString,
+                )
+        self.ListExposedLocations = channel.unary_unary(
+                '/LocationService/ListExposedLocations',
+                request_serializer=location__pb2.ListExposedLocationsRequest.SerializeToString,
+                response_deserializer=location__pb2.ListExposedLocationsResponse.FromString,
                 )
 
 
-class LocationRetrieveServiceServicer(object):
+class LocationServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def RetrieveLocation(self, request, context):
+    def CreateLocation(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def RetrieveLocationList(self, request, context):
+    def GetLocation(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListExposedLocations(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_LocationRetrieveServiceServicer_to_server(servicer, server):
+def add_LocationServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'RetrieveLocation': grpc.unary_unary_rpc_method_handler(
-                    servicer.RetrieveLocation,
-                    request_deserializer=location__pb2.LocationRequest.FromString,
-                    response_serializer=location__pb2.LocationResponse.SerializeToString,
+            'CreateLocation': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateLocation,
+                    request_deserializer=location__pb2.CreateLocationRequest.FromString,
+                    response_serializer=location__pb2.CreateLocationResponse.SerializeToString,
             ),
-            'RetrieveLocationList': grpc.unary_unary_rpc_method_handler(
-                    servicer.RetrieveLocationList,
-                    request_deserializer=location__pb2.LocationListRequest.FromString,
-                    response_serializer=location__pb2.LocationResponseList.SerializeToString,
+            'GetLocation': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetLocation,
+                    request_deserializer=location__pb2.GetLocationRequest.FromString,
+                    response_serializer=location__pb2.Location.SerializeToString,
+            ),
+            'ListExposedLocations': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListExposedLocations,
+                    request_deserializer=location__pb2.ListExposedLocationsRequest.FromString,
+                    response_serializer=location__pb2.ListExposedLocationsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'LocationRetrieveService', rpc_method_handlers)
+            'LocationService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class LocationRetrieveService(object):
+class LocationService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def RetrieveLocation(request,
+    def CreateLocation(request,
             target,
             options=(),
             channel_credentials=None,
@@ -75,14 +91,14 @@ class LocationRetrieveService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/LocationRetrieveService/RetrieveLocation',
-            location__pb2.LocationRequest.SerializeToString,
-            location__pb2.LocationResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/LocationService/CreateLocation',
+            location__pb2.CreateLocationRequest.SerializeToString,
+            location__pb2.CreateLocationResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def RetrieveLocationList(request,
+    def GetLocation(request,
             target,
             options=(),
             channel_credentials=None,
@@ -92,8 +108,25 @@ class LocationRetrieveService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/LocationRetrieveService/RetrieveLocationList',
-            location__pb2.LocationListRequest.SerializeToString,
-            location__pb2.LocationResponseList.FromString,
+        return grpc.experimental.unary_unary(request, target, '/LocationService/GetLocation',
+            location__pb2.GetLocationRequest.SerializeToString,
+            location__pb2.Location.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ListExposedLocations(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/LocationService/ListExposedLocations',
+            location__pb2.ListExposedLocationsRequest.SerializeToString,
+            location__pb2.ListExposedLocationsResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

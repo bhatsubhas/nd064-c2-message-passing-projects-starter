@@ -6,7 +6,6 @@ from flask import Flask, g, jsonify
 from flask_cors import CORS
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
-from kafka import KafkaProducer
 
 db = SQLAlchemy()
 
@@ -29,17 +28,8 @@ def create_app(env=None):
 
     @app.before_request
     def before_request():
-        # Set up a Kafka producer
-        KAFKA_SERVER = os.environ["BOOTSTRAP_SERVER"]
-        producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
-        # Setting Kafka to g enables us to use this
-        # in other parts of our application
-        g.kafka_producer = producer
-
         # Setup gRPC Client Stub
-        GRPC_SERVER = os.environ["LOCATION_GRPC_SERVER"]
-        channel = grpc.insecure_channel(GRPC_SERVER)
-        stub = location_pb2_grpc.LocationRetrieveServiceStub(channel)
-        g.grpc_stub = stub
+        channel = grpc.insecure_channel(os.environ.get("LOCATION_GRPC_SERVER", "localhost:5001"))
+        g.location_stub = location_pb2_grpc.LocationServiceStub(channel)
 
     return app
