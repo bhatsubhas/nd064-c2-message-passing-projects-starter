@@ -2,7 +2,6 @@ aniso8601==7.0.0
 attrs==19.1.0
 Click==7.0
 Flask==1.1.1
-flask-accepts==0.10.0
 flask-cors==3.0.8
 Flask-RESTful==0.3.7
 flask-restplus==0.12.1

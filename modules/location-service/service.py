@@ -118,8 +118,8 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
                 exposed_location = location_pb2.ExposedLocation(
                 location_id=location_id,
                 exposed_person_id=exposed_person_id,
-                exposed_long=exposed_long,
-                exposed_lat=exposed_lat,
+                exposed_long=str(exposed_long),
+                exposed_lat=str(exposed_lat),
                 exposed_time=exposed_time.isoformat()
                 )
                 list_locations_response.locations.append(exposed_location)
