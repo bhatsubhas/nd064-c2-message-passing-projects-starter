@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  LOCATION_GRPC_HOST: "location-service"
+  LOCATION_GRPC_PORT: "5001"
+metadata:
+  name: grpc-env

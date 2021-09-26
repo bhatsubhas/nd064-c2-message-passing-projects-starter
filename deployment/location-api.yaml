@@ -2,37 +2,37 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    service: udaconnect-api
-  name: udaconnect-api
+    service: location-api
+  name: location-api
 spec:
   ports:
-  - name: "5000"
-    port: 5000
-    targetPort: 5000
-    nodePort: 30001
+  - name: "5002"
+    port: 5002
+    targetPort: 5002
+    nodePort: 30002
   selector:
-    service: udaconnect-api
+    service: location-api
   type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service: udaconnect-api
-  name: udaconnect-api
+    service: location-api
+  name: location-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: udaconnect-api
+      service: location-api
   template:
     metadata:
       labels:
-        service: udaconnect-api
+        service: location-api
     spec:
       containers:
-      - image: bhatsubhas/udaconnect-api:latest
-        name: udaconnect-api
+      - image: bhatsubhas/location-api:latest
+        name: location-api
         imagePullPolicy: Always
         env:
         - name: DB_USERNAME
@@ -60,6 +60,21 @@ spec:
             configMapKeyRef:
               name: db-env
               key: DB_PORT
+        - name: KAFKA_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-env
+              key: KAFKA_HOST
+        - name: KAFKA_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-env
+              key: KAFKA_PORT
+        - name: KAFKA_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-env
+              key: KAFKA_TOPIC
         - name: LOCATION_GRPC_HOST
           valueFrom:
             configMapKeyRef:
