@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
       master.vm.network "forwarded_port", guest: p, host: p, protocol: "tcp"
       end
     master.vm.provider "virtualbox" do |v|
-      v.memory = "3072"
+      v.memory = "1536"
       v.name = "master"
       end
     master.vm.provision "shell", inline: <<-SHELL
