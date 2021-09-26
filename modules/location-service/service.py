@@ -22,9 +22,10 @@ DB_PASSWORD = os.environ["DB_PASSWORD"]
 DB_HOST = os.environ["DB_HOST"]
 DB_PORT = os.environ["DB_PORT"]
 DB_NAME = os.environ["DB_NAME"]
-KAFKA_TOPIC_NAME = os.environ.get("TOPIC_NAME", "locations")
-KAFKA_SERVER = os.environ.get("BOOTSTRAP_SERVER", "localhost:9092")
-LOCATION_GRPC_SERVER = os.environ.get("LOCATION_GRPC_SERVER", "localhost:5001")
+KAFKA_HOST = os.environ.get("KAFKA_HOST", "localhost")
+KAFKA_PORT = os.environ.get("KAFKA_PORT", 9092)
+KAFKA_TOPIC = os.environ.get("KAFKA_TOPIC", "locations")
+LOCATION_GRPC_PORT = os.environ.get("LOCATION_GRPC_PORT", "5001")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("location-service")
@@ -32,7 +33,7 @@ logger = logging.getLogger("location-service")
 class LocationServicer(location_pb2_grpc.LocationServiceServicer):
 
     def __init__(self):
-        self.kafka_producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
+        self.kafka_producer = KafkaProducer(bootstrap_servers=f"{KAFKA_HOST}:{KAFKA_PORT}")
         self.db_engine = create_engine(f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
         Session = sessionmaker(bind=self.db_engine)
         self.session = Session()
@@ -45,7 +46,7 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
             "latitude": request.latitude,
             "longitude": request.longitude
         }
-        self.kafka_producer.send(KAFKA_TOPIC_NAME, json.dumps(location_data).encode())
+        self.kafka_producer.send(KAFKA_TOPIC, json.dumps(location_data).encode())
         logger.info(f"[CreateLocation] Accepted Location entry for person with id {request.person_id}")
         return location_pb2.CreateLocationResponse(
             message="Accepted request to create location entry"
@@ -134,9 +135,9 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
 def main():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
     location_pb2_grpc.add_LocationServiceServicer_to_server(LocationServicer(), server)
-
-    logger.info(f"Location Service is starting on {LOCATION_GRPC_SERVER}...")
-    server.add_insecure_port(LOCATION_GRPC_SERVER)
+    service_address = f"localhost:{LOCATION_GRPC_PORT}"
+    logger.info(f"Location Service is starting on {service_address}...")
+    server.add_insecure_port(service_address)
     server.start()
 
     try:

@@ -26,7 +26,8 @@ class ConnectionService:
         location_list_request = location_pb2.ListExposedLocationsRequest(
             person_id=person_id,
             start_date=start_date.isoformat(),
-            end_date=end_date.isoformat()
+            end_date=end_date.isoformat(),
+            meters=int(meters)
         )
         location_list_response = g.location_stub.ListExposedLocations(location_list_request)
         exposed_locations = location_list_response.locations

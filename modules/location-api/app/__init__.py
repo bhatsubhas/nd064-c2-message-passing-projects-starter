@@ -29,7 +29,9 @@ def create_app(env=None):
     @app.before_request
     def before_request():
         # Setup gRPC Client Stub
-        channel = grpc.insecure_channel(os.environ.get("LOCATION_GRPC_SERVER", "localhost:5001"))
+        LOCATION_GRPC_HOST = os.environ.get("LOCATION_GRPC_HOST", "localhost")
+        LOCATION_GRPC_PORT = os.environ.get("LOCATION_GRPC_PORT", "5001")
+        channel = grpc.insecure_channel(f"{LOCATION_GRPC_HOST}:{LOCATION_GRPC_PORT}")
         g.location_stub = location_pb2_grpc.LocationServiceStub(channel)
 
     return app

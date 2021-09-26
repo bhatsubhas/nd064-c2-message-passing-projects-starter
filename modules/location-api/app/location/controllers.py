@@ -5,11 +5,9 @@ import location_pb2
 from app.location.models import Location
 from app.location.schemas import LocationSchema
 from flask import g, request
-from flask_accepts import accepts
 from flask_restx import Namespace, Resource, fields
 
 DATE_FORMAT = "%Y-%m-%d"
-TOPIC_NAME = os.environ["TOPIC_NAME"]
 
 api = Namespace("Location", description="Location API for Udaconnect")  # noqa
 
@@ -54,7 +52,6 @@ class LocationCreateResource(Resource):
     @api.doc("Create a location entry when details are passed")
     @api.expect(location_request)
     @api.marshal_with(success_response, code=202)
-    @accepts(schema=LocationSchema)
     def post(self) -> Location:
         location_data = request.get_json()
         create_location_request = location_pb2.CreateLocationRequest(

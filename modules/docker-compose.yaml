@@ -37,8 +37,8 @@ services:
     ports: 
       - 25432:5432
     restart: on-failure
-  location-injection-service:
-    image: location-injection-service
+  location-service:
+    image: location-service
     env_file:
       - database.env
       - kafka.env
@@ -46,27 +46,15 @@ services:
     depends_on: 
       - db
       - kafka
-  location-retrieve-service:
-    image: location-retrieve-service
+  location-ingestion-service:
+    image: location-ingestion-service
     env_file:
       - database.env
       - grpc.env
+      - kafka.env
     restart: on-failure
     depends_on: 
       - db
-  location-api:
-    image: location-api
-    env_file: 
-      - database.env
-      - kafka.env
-      - grpc.env
-    ports: 
-      - 5000:5000
-    restart: on-failure
-    depends_on:
-      - db
-      - kafka
-      - location-retrieve-service
   udaconnect-api:
     image: udaconnect-api
     env_file: 
@@ -77,4 +65,9 @@ services:
     restart: on-failure
     depends_on: 
       - db
-      - location-retrieve-service
+      - location-service
+  udaconnect-app:
+    image: udaconnect-app
+    ports:
+      - 3001:3000
+    restart: on-failure
