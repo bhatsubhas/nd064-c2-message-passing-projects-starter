@@ -1,0 +1,19 @@
+version: '3'
+
+volumes: 
+  postgis-data:
+
+services:
+  db: 
+    image: postgis/postgis:12-2.5-alpine
+    volumes: 
+      - postgis-data:/var/lib/postgresql/data
+    environment: 
+      - POSTGRES_DB=gis
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - POSTGRES_MULTIPLE_EXTENSIONS=postgis,hstore,postgis_topology,postgis_raster,pgrouting
+    ports: 
+      - 25432:5432
+    restart: on-failure
