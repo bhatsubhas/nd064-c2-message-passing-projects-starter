@@ -37,3 +37,4 @@ insert into public.location (id, person_id, coordinate, creation_time) values (6
 insert into public.location (id, person_id, coordinate, creation_time) values (66, 5, '010100000097FDBAD39D925EC0D00A0C59DDC64240', '2020-07-07 10:37:06.000000');
 insert into public.location (id, person_id, coordinate, creation_time) values (67, 8, '010100000097FDBAD39D925EC0D00A0C59DDC64240', '2020-07-07 10:37:06.000000');
 insert into public.location (id, person_id, coordinate, creation_time) values (68, 6, '010100000097FDBAD39D925EC0D00A0C59DDC64240', '2020-08-15 10:37:06.000000');
+select setval('location_id_seq', max(id)) from public.location;

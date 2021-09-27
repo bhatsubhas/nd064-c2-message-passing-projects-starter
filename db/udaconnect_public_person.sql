@@ -3,3 +3,4 @@ insert into public.person (id, first_name, last_name, company_name) values (6, '
 insert into public.person (id, first_name, last_name, company_name) values (1, 'Pam', 'Trexler', 'Hampton, Hampton and McQuill');
 insert into public.person (id, first_name, last_name, company_name) values (8, 'Paul', 'Badman', 'Paul Badman & Associates');
 insert into public.person (id, first_name, last_name, company_name) values (9, 'Otto', 'Spring', 'The Chicken Sisters Restaurant');
+select setval('person_id_seq', max(id)) from public.person;
